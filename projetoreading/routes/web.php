@@ -1,7 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+namespace App\Http\Controller;
 
+use App\Http\Controllers\Initial\InicioController;
+use Illuminate\Support\Facades\Route;
+use App\Models\Livro;
+use App\Http\Controllers\LivroController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [InicioController::class, "index"]);
+
+
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::resource('livro', LivroController::class);
 });
