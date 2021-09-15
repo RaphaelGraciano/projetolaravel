@@ -47,7 +47,7 @@ class LivroController extends Controller
         ]);
         if ($validated) {
             $livro = new Livro();
-            $livro->user_id = $request->get('user');
+            $livro->user_id = $request->get('user_id');
             $livro->nomelivro = $request->get('nomelivro');
             $livro->autor = $request->get('autor');
             $livro->resenha = $request->get('resenha');
