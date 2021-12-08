@@ -4,12 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use AppTraits\ApiResponse;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Node\Stmt\TryCatch;
 
 class AuthController extends Controller
 {
@@ -20,37 +19,36 @@ class AuthController extends Controller
         try {
             $validatedData = Validator::make($request->all(), [
                 'name' => 'required|string|max:255|unique:users',
-                'email' => 'required|string|max:255|unique:users',
-                'password' => 'required|string|min:8'
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
             ]);
 
             if ($validatedData->fails()) {
-                return $this->error("Falha ao registrar!!", 403, $validatedData->errors());
+                return $this->error("Falha ao registrar!!!", 403, $validatedData->errors());
             }
 
-
             $user = User::create([
-                'name' => $request->get('name'),
-                'email' => $request->get('email'),
-                'password' => Hash::make($request->get('password')),
+                'name' => $request->get("name"),
+                'email' => $request->get("email"),
+                'password' => Hash::make($request->get("password")),
             ]);
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return $this->success([
                 'access_token' => $token,
-                'user' => $user,
-            ], "Cadastro realizado com sucesso.");
+                'user' => $user
+            ], "Cadastro realizado com sucesso!!!");
         } catch (\Throwable $th) {
-            return $this->error("Falha ao registrar!!", 401, $th->getMessage());
+            return $this->error("Falha ao registrar!!!", 401, $th->getMessage());
         }
     }
 
     public function login(Request $request)
     {
         try {
-            if (!Auth::attempt($request->only('email', 'passoword'))) {
-                return $this->error('Dados de autenticação inválidos.', 401);
+            if (!Auth::attempt($request->only('email', 'password'))) {
+                return $this->error('Dados de autenticação inválidos!!!', 401);
             }
 
             $user = User::where('email', $request['email'])->firstOrFail();
@@ -60,9 +58,9 @@ class AuthController extends Controller
             return $this->success([
                 'access_token' => $token,
                 'user' => $user
-            ], "Login realizado.");
+            ], "Login realizado!!!");
         } catch (\Throwable $th) {
-            return $this->error("Falha ao realizar login.", 401, $th->getMessage());
+            return $this->error("Falha ao realizar o login!!!", 401, $th->getMessage());
         }
     }
 
@@ -71,9 +69,19 @@ class AuthController extends Controller
         try {
             $request->user()->currentAccessToken()->delete();
 
-            return $this->success(null, "Até a próxima.");
+            return $this->success(null, "Até a próxima");
         } catch (\Throwable $th) {
-            return $this->error("Falha ao realizar logout.", 401, $th->getMessage());
+            return $this->error("Falha ao realizar o logout!!!", 401, $th->getMessage());
+        }
+    }
+
+    public function users()
+    {
+        try {
+            $users = User::all();
+            return $this->success($users);
+        } catch (\Throwable $th) {
+            return $this->error("Falha ao retornar usuários!!!", 401, $th->getMessage());
         }
     }
 }
