@@ -12,7 +12,7 @@
     <header>
         <section>
             <picture>
-                <img href='/' src="{{asset('img/Logo.svg')}}" alt="Logo" />
+                <a href='/'> <img src="{{asset('img/Logo.svg')}}" alt="Logo" /></a>
             </picture>
         </section>
     </header>
